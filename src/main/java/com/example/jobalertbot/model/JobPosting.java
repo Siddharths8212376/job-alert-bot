@@ -52,4 +52,20 @@ public class JobPosting {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    @Override
+    public String toString() {
+        return "JobPosting{" +
+                "company='" + company + '\'' +
+                ", externalJobId='" + externalJobId + '\'' +
+                ", title='" + title + '\'' +
+                ", location='" + location + '\'' +
+                ", description='" + description + '\'' +
+                ", url='" + url + '\'' +
+                ", relevanceScore=" + relevanceScore +
+                ", postedDate=" + postedDate +
+                ", createdAt=" + createdAt +
+                ", active=" + active +
+                '}';
+    }
 }
