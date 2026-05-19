@@ -2,6 +2,7 @@ package com.example.jobalertbot.service;
 
 import com.example.jobalertbot.model.JobPosting;
 import com.example.jobalertbot.model.Subscriber;
+import com.example.jobalertbot.model.SubscriberStatus;
 import com.example.jobalertbot.repository.SubscriberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,9 +48,9 @@ public class EmailService {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("from", from);
 
-        List<Subscriber> subscribers = subscriberRepository.findByActiveTrue();
+        List<Subscriber> activeSubscribers = subscriberRepository.findByStatus(SubscriberStatus.ACTIVE);
 
-        for (Subscriber subscriber : subscribers) {
+        for (Subscriber subscriber : activeSubscribers) {
             String recipient = subscriber.getEmail();
             form.add("to", recipient);
         }

@@ -16,14 +16,18 @@ public class SubscriberController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
-        subscriberService.subscribe(request.getEmail());
-        return ResponseEntity.status(200).body("Subscribed successfully.");
+    public ResponseEntity<String> signup(
+            @RequestBody SignupRequest request
+    ) {
+        subscriberService.signup(request);
+        return ResponseEntity.ok("Signup successful. Your request is pending approval.");
     }
 
-    @PostMapping("/unsubscribe")
-    public ResponseEntity<String> unsubscribe(@RequestBody SignupRequest request) {
-        subscriberService.unsubscribe(request.getEmail());
-        return ResponseEntity.status(200).body("Unsubscribed successfully.");
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<String> approveSubscriber(
+            @PathVariable Long id
+    ) {
+        subscriberService.approveSubscriber(id);
+        return ResponseEntity.ok("Subscriber approved successfully.");
     }
 }

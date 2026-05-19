@@ -17,7 +17,7 @@ public class JobController {
     @PostMapping("/run")
     public ResponseEntity<String> runJobSearch() {
         jobAggregationService.runJobSearch();
-        return ResponseEntity.ok("Job search completed");
+        return ResponseEntity.ok("Job search completed.");
     }
 
     @PostMapping("/resend-active")
