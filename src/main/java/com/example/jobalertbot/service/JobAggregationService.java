@@ -25,7 +25,6 @@ public class JobAggregationService {
     private final JobFilterService filterService;
     private final EmailService emailService;
     private final List<CompanyCrawler> crawlers;
-    private final JobSearchCriteriaProvider criteriaProvider;
 
     public JobAggregationService(
             List<CompanyCrawler> crawlers,
@@ -33,7 +32,6 @@ public class JobAggregationService {
             SubscriberRepository subscriberRepository,
             JobNotificationRepository jobNotificationRepository,
             JobFilterService filterService,
-            JobSearchCriteriaProvider criteriaProvider,
             EmailService emailService
     ) {
         this.crawlers = crawlers;
@@ -41,7 +39,6 @@ public class JobAggregationService {
         this.subscriberRepository = subscriberRepository;
         this.jobNotificationRepository = jobNotificationRepository;
         this.filterService = filterService;
-        this.criteriaProvider = criteriaProvider;
         this.emailService = emailService;
     }
 
@@ -151,10 +148,7 @@ public class JobAggregationService {
     }
 
     private void crawlAndStoreJobs() {
-
-        // Global/default criteria used only while fetching jobs.
-        // (Many APIs accept filters such as titles and locations.)
-        JobSearchCriteria criteria = criteriaProvider.getCriteria();
+        JobSearchCriteria criteria = new JobSearchCriteria();
 
         List<JobPosting> jobsToSave = new ArrayList<>();
 
