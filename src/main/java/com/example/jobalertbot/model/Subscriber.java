@@ -19,8 +19,15 @@ public class Subscriber {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private boolean active = true;
+    private SubscriberStatus status = SubscriberStatus.PENDING_APPROVAL;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime approvedAt;
+
+    @OneToOne(mappedBy = "subscriber", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserCriteria criteria;
 }
