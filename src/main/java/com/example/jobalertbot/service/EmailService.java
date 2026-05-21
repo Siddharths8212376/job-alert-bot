@@ -1,5 +1,6 @@
 package com.example.jobalertbot.service;
 
+import com.example.jobalertbot.exception.MailgunRegistrationException;
 import com.example.jobalertbot.model.JobPosting;
 import com.example.jobalertbot.model.Subscriber;
 import com.example.jobalertbot.model.SubscriberStatus;
@@ -12,6 +13,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -124,5 +130,26 @@ public class EmailService {
 
         html.append("</ul>");
         return html.toString();
+    }
+
+    public void addSubscriberToMailgun(String email) throws IOException, InterruptedException {
+        String auth = Base64.getEncoder().encodeToString(("api:" + apiKey).getBytes(StandardCharsets.UTF_8));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.mailgun.net/v5/sandbox/auth_recipients?email=" + email))
+                .header("Authorization", "Basic " + auth)
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            log.info("Subscriber added to Mailgun sandbox successfully: {}", email);
+            return;
+        }
+
+        log.error("Failed to add subscriber to Mailgun. Status: {}, Body: {}", response.statusCode(), response.body());
+        throw new MailgunRegistrationException("Failed to add Subscriber to Mailgun.");
     }
 }
