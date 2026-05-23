@@ -1,23 +1,29 @@
 package com.example.jobalertbot.service;
 
 import com.example.jobalertbot.dto.SignupRequest;
+import com.example.jobalertbot.exception.SubscriberNotFoundException;
 import com.example.jobalertbot.model.Subscriber;
 import com.example.jobalertbot.model.SubscriberStatus;
 import com.example.jobalertbot.model.UserCriteria;
 import com.example.jobalertbot.repository.SubscriberRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class SubscriberService {
 
     private final SubscriberRepository subscriberRepository;
+    private final EmailService emailService;
 
-    public SubscriberService(SubscriberRepository subscriberRepository) {
+    public SubscriberService(SubscriberRepository subscriberRepository, EmailService emailService) {
         this.subscriberRepository = subscriberRepository;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -60,9 +66,11 @@ public class SubscriberService {
     }
 
     @Transactional
-    public void approveSubscriber(Long subscriberId) {
+    public void approveSubscriber(Long subscriberId) throws IOException, InterruptedException {
         Subscriber subscriber = subscriberRepository.findById(subscriberId)
-                .orElseThrow(() -> new RuntimeException("Subscriber not found."));
+                .orElseThrow(() -> new SubscriberNotFoundException("Subscriber not found."));
+
+        emailService.addSubscriberToMailgun(subscriber.getEmail());
 
         subscriber.setStatus(SubscriberStatus.ACTIVE);
         subscriber.setApprovedAt(LocalDateTime.now());
